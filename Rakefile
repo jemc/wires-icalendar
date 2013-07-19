@@ -1,6 +1,6 @@
 require 'rake/testtask'
 
-gemname = 'wires-inotify'
+gemname = 'wires-icalendar'
 
 # Run tests
 task :default => [:test]
