@@ -4,6 +4,8 @@ require 'wires/icalendar'
 require 'wires/test'
 begin require 'jemc/reporter'; rescue LoadError; end
 
+require 'timecop' # for time mocking functions
+
 
 $test_cal_path = File.expand_path('./fixtures/life.ics', File.dirname(__FILE__))
 $test_cal = Icalendar::Calendar.new.tap do |cal|
@@ -14,6 +16,7 @@ $test_cal = Icalendar::Calendar.new.tap do |cal|
     description "Description..."
   end
 end
+
 
 describe Wires::Calendar do
   

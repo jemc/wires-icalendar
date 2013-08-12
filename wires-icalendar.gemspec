@@ -11,10 +11,11 @@ Gem::Specification.new do |s|
   s.homepage      = 'https://github.com/jemc/wires-icalendar/'
   s.licenses      = "Copyright (c) Joe McIlvain. All rights reserved "
   
-  s.add_dependency('wires', '~> 0.2.8')
+  s.add_dependency('wires')
   s.add_dependency('icalendar', '~> 1.4.1')
   
   s.add_development_dependency('rake')
-  s.add_development_dependency('minitest')
-  s.add_development_dependency('turn')
+  s.add_development_dependency('wires-test')
+  s.add_development_dependency('jemc-reporter')
+  s.add_development_dependency('timecop')
 end

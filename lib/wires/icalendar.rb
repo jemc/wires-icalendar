@@ -42,6 +42,13 @@ module Wires
         self.properties.include? k
       end
       
+      # Convert all time-related objects to Time objects
+      kwargs.keys.each do |k|
+        if kwargs[k].is_a? Date or kwargs[k].is_a? Time
+          kwargs[k] = kwargs[k].to_time
+        end
+      end
+      
       start_kwargs = kwargs.dup
       end_kwargs   = kwargs.dup
       
