@@ -1,21 +1,19 @@
-require 'wires'
-require_relative '../lib/wires/icalendar'
+$LOAD_PATH.unshift(File.expand_path("../lib", File.dirname(__FILE__)))
+require 'wires/icalendar'
 
-require 'minitest/autorun'
-require 'minitest/spec'
-# require 'turn'
-# Turn.config.format  = :outline
-# Turn.config.natural = true
-# Turn.config.trace   = 5
+require 'wires/test'
+begin require 'jemc/reporter'; rescue LoadError; end
 
 
-describe Wires do
-  it "encapsulates the right things"
-  it "doesn't encapsulate the other things"
+$testcal = File.expand_path('./spec/fixtures/life.ics', File.dirname(__FILE__))
+
+describe Wires::Calendar do
+  describe "#new_from" do
+    it "can create by parsing from a filepath"
+    it "can create by parsing a File object"
+  end
 end
 
 
-include Wires
 
-#$testcal = "/tmp/wires-inotify-testdir-#{$$}"
 
