@@ -5,24 +5,33 @@ require 'wires/test'
 begin require 'jemc/reporter'; rescue LoadError; end
 
 
-$testcal = File.expand_path('./fixtures/life.ics', File.dirname(__FILE__))
+$test_cal_path = File.expand_path('./fixtures/life.ics', File.dirname(__FILE__))
+$test_cal = Icalendar::Calendar.new.tap do |cal|
+  cal.event do
+    dtstart     Date.new(2005, 04, 29)
+    dtend       Date.new(2005, 04, 28)
+    summary     "Summary."
+    description "Description..."
+  end
+end
 
 describe Wires::Calendar do
   
   describe ".new" do
-    
     it "can create by parsing from a filepath" do
-      cal = Wires::Calendar.new $testcal
+      cal = Wires::Calendar.new $test_cal_path
       cal.must_be_instance_of Wires::Calendar
     end
     
     it "can create by parsing a File object" do
-      cal = Wires::Calendar.new File.open($testcal)
+      cal = Wires::Calendar.new File.open($test_cal_path)
       cal.must_be_instance_of Wires::Calendar
     end
     
-    # it "can create from a specific calendar in an ics file"
-    
+    it "can create directly from an Icalendar::Calendar object" do
+      cal = Wires::Calendar.new $test_cal
+      cal.must_be_instance_of Wires::Calendar
+    end
   end
   
 end
@@ -33,7 +42,7 @@ describe Wires::CalendarEvent do
     
     it "creates a CalendarStartEvent and CalendarEndEvent"\
        " from an Icalendar::Event" do
-      ical = Icalendar.parse(File.open $testcal)
+      ical = Icalendar.parse(File.open $test_cal_path)
       pair = Wires::CalendarEvent.new_pair(ical[0].events[0])
       pair[0].must_be_instance_of Wires::CalendarStartEvent
       pair[1].must_be_instance_of Wires::CalendarEndEvent
