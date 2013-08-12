@@ -48,6 +48,18 @@ describe Wires::CalendarEvent do
       pair[1].must_be_instance_of Wires::CalendarEndEvent
     end
     
+    it "returns only a CalendarStartEvent in the array"\
+       " if the Icalendar::Event has no dtend" do
+      pair = Wires::CalendarEvent.new_pair(
+        Icalendar::Event.new.tap do |e|
+          e.dtstart     Date.new(2005, 04, 29)
+          e.summary     "Summary."
+          e.description "Description..."
+        end
+      )
+      pair[0].must_be_instance_of Wires::CalendarStartEvent
+      pair.size.must_equal 1
+    end
   end
   
 end

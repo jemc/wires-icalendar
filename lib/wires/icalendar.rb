@@ -13,7 +13,7 @@ module Wires
     }; end
     
     def self.additional_properties
-      [:summary, :description, :start_time, :end_time]
+      [:summary, :description]
     end
     
     def self.properties
@@ -45,19 +45,23 @@ module Wires
       start_kwargs = kwargs.dup
       end_kwargs   = kwargs.dup
       
-      [CalendarStartEvent.new(**start_kwargs),
-       CalendarEndEvent.new(**end_kwargs)]
+      if kwargs[:end_time]
+        [CalendarStartEvent.new(**start_kwargs),
+         CalendarEndEvent.new(**end_kwargs)]
+      else
+        [CalendarStartEvent.new(**start_kwargs)]
+      end
     end
   end
   
   class CalendarStartEvent < CalendarEvent
     alias_method :time,  :start_time
-    # alias_method :time=, :start_time=
+    alias_method :time=, :start_time=
   end
   
   class CalendarEndEvent < CalendarEvent
     alias_method :time,  :end_time
-    # alias_method :time=, :end_time=
+    alias_method :time=, :end_time=
   end
   
   class Calendar
