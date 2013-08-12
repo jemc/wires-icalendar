@@ -59,17 +59,14 @@ module Wires
   
   class Calendar
     
-    def initialize(file)
+    def initialize(file, index=0)
       file = File.open(file) unless file.is_a? File
-      @calendars = Icalendar.parse file
+      @calendar = (Icalendar.parse file)[index]
       
-      @items = {}
-      @calendars.each do |c|
-        @items[c] = []
-        c.events.each do |ical_e|
-          CalendarEvent.new_pair(ical_e).each do |e|
-            @items[c] << TimeSchedulerItem.new(e.time.to_time, e, Calendar)
-          end
+      @items = []
+      @calendar.events.each do |ical_e|
+        CalendarEvent.new_pair(ical_e).each do |e|
+          @items << TimeSchedulerItem.new(e.time.to_time, e, Calendar)
         end
       end
     end

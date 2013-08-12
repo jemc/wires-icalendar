@@ -21,6 +21,8 @@ describe Wires::Calendar do
       cal.must_be_instance_of Wires::Calendar
     end
     
+    # it "can create from a specific calendar in an ics file"
+    
   end
   
 end
