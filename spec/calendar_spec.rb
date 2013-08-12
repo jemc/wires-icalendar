@@ -27,9 +27,15 @@ end
 
 describe Wires::CalendarEvent do
   
-  describe ".new" do
+  describe ".new_pair" do
     
-    it "is created from an Icalendar::Event"
+    it "creates a CalendarStartEvent and CalendarEndEvent"\
+       " from an Icalendar::Event" do
+      ical = Icalendar.parse(File.open $testcal)
+      pair = Wires::CalendarEvent.new_pair(ical[0].events[0])
+      pair[0].must_be_instance_of Wires::CalendarStartEvent
+      pair[1].must_be_instance_of Wires::CalendarEndEvent
+    end
     
   end
   
