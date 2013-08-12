@@ -75,8 +75,11 @@ module Wires
     
     attr_accessor :items
     
-    def initialize(cal, index=0)
+    def initialize(cal=nil, index=0)
       case cal
+      when nil
+        @calendar = Icalendar::Calendar.new
+        yield @calendar if block_given?
       when Icalendar::Calendar
         @calendar = cal
       when File
@@ -91,6 +94,7 @@ module Wires
           @items << TimeSchedulerItem.new(e.time.to_time, e, Calendar)
         end
       end
+      @items.each do |i| TimeScheduler << i end
     end
     
   end

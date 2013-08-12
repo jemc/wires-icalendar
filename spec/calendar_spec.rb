@@ -10,8 +10,8 @@ require 'timecop' # for time mocking functions
 $test_cal_path = File.expand_path('./fixtures/life.ics', File.dirname(__FILE__))
 $test_cal = Icalendar::Calendar.new.tap do |cal|
   cal.event do
-    dtstart     Date.new(2005, 04, 29)
-    dtend       Date.new(2005, 04, 28)
+    dtstart     1.year.from_now
+    dtend       1.hour.since(1.year.from_now)
     summary     "Summary."
     description "Description..."
   end
@@ -35,6 +35,69 @@ describe Wires::Calendar do
       cal = Wires::Calendar.new $test_cal
       cal.must_be_instance_of Wires::Calendar
     end
+    
+    it "can create directly from a block with Icalendar::Calendar syntax" do
+      cal = Wires::Calendar.new do |c|
+        c.event do
+          dtstart     1.year.from_now
+          dtend       1.hour.since(1.year.from_now)
+          summary     "Summary."
+          description "Description..."
+        end
+      end
+      cal.must_be_instance_of Wires::Calendar
+    end
+    
+    it "creates an empty Wires::Calendar when given no arguments" do
+      cal = Wires::Calendar.new
+      cal.must_be_instance_of Wires::Calendar
+    end
+    
+    it "yields TimeSchedulerItems that are ready at the right time" do
+      cal = Wires::Calendar.new do |cal|
+        cal.event do
+          dtstart     1.year.from_now
+          dtend       1.hour.since(1.year.from_now)
+          summary     "Summary."
+          description "Description..."
+        end
+      end
+      
+      cal.items
+         .select{|x| x.event.is_a? Wires::CalendarStartEvent}
+         .each do |i|
+        i.ready?.must_equal false
+      end
+      cal.items
+         .select{|x| x.event.is_a? Wires::CalendarEndEvent}
+         .each do |i|
+        i.ready?.must_equal false
+      end
+      
+      Timecop.travel 1.year.from_now
+      
+      cal.items
+         .select{|x| x.event.is_a? Wires::CalendarStartEvent}
+         .each do |i|
+        i.ready?.must_equal true
+      end
+      cal.items
+         .select{|x| x.event.is_a? Wires::CalendarEndEvent}
+         .each do |i|
+        i.ready?.must_equal false
+      end
+      
+      Timecop.travel 1.hour.from_now
+      
+      cal.items
+         .select{|x| x.event.is_a? Wires::CalendarEndEvent}
+         .each do |i|
+        i.ready?.must_equal true
+      end
+      
+      Timecop.travel 1.hour.ago
+      Timecop.travel 1.year.ago
+    end
   end
   
 end
@@ -42,7 +105,6 @@ end
 describe Wires::CalendarEvent do
   
   describe ".new_pair" do
-    
     it "creates a CalendarStartEvent and CalendarEndEvent"\
        " from an Icalendar::Event" do
       ical = Icalendar.parse(File.open $test_cal_path)
